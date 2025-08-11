@@ -12,8 +12,8 @@ const functionsConsumerAbi = require("../../abi/functionsClient.json");
 const ethers = require("ethers");
 require("@chainlink/env-enc").config();
 
-const consumerAddress = "0x8dFf78B7EE3128D00E90611FBeD20A71397064D9"; // REPLACE this with your Functions consumer address
-const subscriptionId = 3; // REPLACE this with your subscription ID
+const consumerAddress = "0x2f73D5A0840c0946029713dAfC07e8398420ee70"; // REPLACE this with your Functions consumer address
+const subscriptionId = 5416; // REPLACE this with your subscription ID
 
 const makeRequestSepolia = async () => {
   // hardcoded for Ethereum Sepolia
@@ -27,7 +27,7 @@ const makeRequestSepolia = async () => {
     .readFileSync(path.resolve(__dirname, "source.js"))
     .toString();
 
-  const args = ["ETH", "USD"];
+  // const args = ["ETH", "USD"];
   const gasLimit = 300000;
 
   // Initialize ethers signer and provider to interact with the contracts onchain
@@ -53,7 +53,7 @@ const makeRequestSepolia = async () => {
 
   const response = await simulateScript({
     source: source,
-    args: args,
+    args: [],
     bytesArgs: [], // bytesArgs - arguments can be encoded off-chain to bytes.
     secrets: {}, // no secrets in this example
   });
@@ -107,10 +107,12 @@ const makeRequestSepolia = async () => {
   console.log("\nMake request...");
 
   const functionsConsumer = new ethers.Contract(
-    consumerAddress,
-    functionsConsumerAbi,
-    signer
+    // consumerAddress,
+    // functionsConsumerAbi,
+    // signer
   );
+  // console.log("🚀 ~ request.js:114 ~ makeRequestSepolia ~ functionsConsumer:", functionsConsumer)
+
 
   // Actual transaction call
   const transaction = await functionsConsumer.sendRequest(
@@ -118,7 +120,7 @@ const makeRequestSepolia = async () => {
     "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
     0, // don hosted secrets - slot ID - empty in this example
     0, // don hosted secrets - version - empty in this example
-    args,
+    [],// args,
     [], // bytesArgs - arguments can be encoded off-chain to bytes.
     subscriptionId,
     gasLimit,

@@ -112,6 +112,8 @@ const makeRequestSepolia = async () => {
     functionsConsumerAbi,
     signer
   );
+  console.log("🚀 ~ request.js:115 ~ makeRequestSepolia ~ functionsConsumer:", functionsConsumer)
+
 
   // Actual transaction call
   const transaction = await functionsConsumer.sendRequest(
@@ -119,7 +121,7 @@ const makeRequestSepolia = async () => {
     "0x", // user hosted secrets - encryptedSecretsUrls - empty in this example
     0, // don hosted secrets - slot ID - empty in this example
     0, // don hosted secrets - version - empty in this example
-    args,
+    [],
     [], // bytesArgs - arguments can be encoded off-chain to bytes.
     subscriptionId,
     gasLimit,
