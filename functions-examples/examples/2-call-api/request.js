@@ -12,7 +12,7 @@ const functionsConsumerAbi = require("../../abi/functionsClient.json");
 const ethers = require("ethers");
 require("@chainlink/env-enc").config();
 
-const consumerAddress = "0x2f73D5A0840c0946029713dAfC07e8398420ee70"; // REPLACE this with your Functions consumer address
+const consumerAddress = "0x346F4a0f88D5FD01B3F9cDBcF872F72783b1BA79"; // REPLACE this with your Functions consumer address
 const subscriptionId = 5416; // REPLACE this with your subscription ID
 
 const makeRequestSepolia = async () => {
@@ -37,8 +37,7 @@ const makeRequestSepolia = async () => {
       "private key not provided - check your environment variables"
     );
 
-  const rpcUrl = process.env.ETHEREUM_SEPOLIA_RPC_URL; // fetch Sepolia RPC URL
-
+  const rpcUrl = process.env.ETHEREUM_SEPOLIA_RPC_URL;
   if (!rpcUrl)
     throw new Error(`rpcUrl not provided  - check your environment variables`);
 
@@ -63,14 +62,11 @@ const makeRequestSepolia = async () => {
   if (errorString) {
     console.log(`❌ Error during simulation: `, errorString);
   } else {
-    const returnType = ReturnType.uint256;
-    const responseBytesHexstring = response.responseBytesHexstring;
-    if (ethers.utils.arrayify(responseBytesHexstring).length > 0) {
-      const decodedResponse = decodeResult(
-        response.responseBytesHexstring,
-        returnType
-      );
-      console.log(`✅ Decoded response to ${returnType}: `, decodedResponse);
+    const raw = response.responseBytesHexstring;
+    if (ethers.utils.arrayify(raw).length > 0) {
+      const decodedStr = decodeResult(raw, ReturnType.string);
+      const arr = JSON.parse(decodedStr);
+      console.log("✅ Decoded visibility top10 (simulation):", arr);
     }
   }
 
@@ -107,11 +103,17 @@ const makeRequestSepolia = async () => {
   console.log("\nMake request...");
 
   const functionsConsumer = new ethers.Contract(
-    // consumerAddress,
-    // functionsConsumerAbi,
-    // signer
+    consumerAddress,
+    functionsConsumerAbi,
+    signer
   );
-  // console.log("🚀 ~ request.js:114 ~ makeRequestSepolia ~ functionsConsumer:", functionsConsumer)
+
+  const lastResponse = await functionsConsumer.s_lastResponse([0]);
+  console.log("🚀 ~ request.js:113 ~ makeRequestSepolia ~ lastResponse:", lastResponse)
+  
+  
+  const decodeStr0 = decodeResult(lastResponse, ReturnType.string);
+  console.log("🚀 ~ request.js:121 ~ makeRequestSepolia ~ decodeStr:", decodeStr0)
 
 
   // Actual transaction call
@@ -188,16 +190,11 @@ const makeRequestSepolia = async () => {
       if (errorString) {
         console.log(`\n❌ Error during the execution: `, errorString);
       } else {
-        const responseBytesHexstring = response.responseBytesHexstring;
-        if (ethers.utils.arrayify(responseBytesHexstring).length > 0) {
-          const decodedResponse = decodeResult(
-            response.responseBytesHexstring,
-            ReturnType.uint256
-          );
-          console.log(
-            `\n✅ Decoded response to ${ReturnType.uint256}: `,
-            decodedResponse
-          );
+        const raw = response.responseBytesHexstring;
+        if (ethers.utils.arrayify(raw).length > 0) {
+          const decodedStr = decodeResult(raw, ReturnType.string);
+          const arr = JSON.parse(decodedStr);
+          console.log("\n✅ Decoded visibility top10 (on-chain):", arr);
         }
       }
     } catch (error) {
